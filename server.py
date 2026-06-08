@@ -4,7 +4,7 @@ from pydantic import BaseModel
 import uvicorn
 import os
 
-from docs_tool import append_to_doc
+from doc_tool import append_to_doc
 from gmail_tool import create_email_draft
 
 app = FastAPI(
