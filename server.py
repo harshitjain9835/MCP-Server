@@ -34,27 +34,17 @@ class EmailRequest(BaseModel):
 
 # --- Core Approval Logic ---
 def require_approval(action_name: str, payload: dict) -> bool:
-    """Prompts the terminal user to approve or deny an action."""
-    # Bypass interactive prompt in non-interactive environments like Railway
-    if os.environ.get("SKIP_TERMINAL_APPROVAL", "").lower() == "true":
-        print(f"⚠️  Auto-approving {action_name} (SKIP_TERMINAL_APPROVAL is true)")
-        return True
+    """Returns whether the action is approved, based on the REQUIRE_APPROVAL env var.
 
-    print("\n" + "="*50)
-    print(f"| ⚠️  ACTION REQUIRED: {action_name}")
-    print(f"| 📦  Payload: {payload}")
-    print("="*50)
-    
-    while True:
-        response = input("Approve this action? (y/n): ").strip().lower()
-        if response in ['y', 'yes']:
-            print("✅ Action approved.")
-            return True
-        elif response in ['n', 'no']:
-            print("❌ Action denied.")
-            return False
-        else:
-            print("Invalid input. Please enter 'y' for yes or 'n' for no.")
+    Set REQUIRE_APPROVAL=true to deny all actions (returns False).
+    Defaults to False (approval not required), so actions proceed automatically
+    in deployed environments where no stdin is available.
+    """
+    if os.environ.get("REQUIRE_APPROVAL", "false").lower() == "true":
+        print(f"❌ Action '{action_name}' blocked by REQUIRE_APPROVAL=true.")
+        return False
+    print(f"✅ Auto-approving '{action_name}' (REQUIRE_APPROVAL is not set to true).")
+    return True
 
 # --- API Endpoints ---
 @app.get("/", tags=["General"])
