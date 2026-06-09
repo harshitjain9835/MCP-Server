@@ -57,6 +57,11 @@ def require_approval(action_name: str, payload: dict) -> bool:
             print("Invalid input. Please enter 'y' for yes or 'n' for no.")
 
 # --- API Endpoints ---
+@app.get("/", tags=["General"])
+def read_root():
+    """Root endpoint to check if the server is running."""
+    return {"status": "online", "message": "Google MCP Server is running. Visit /docs for API documentation."}
+
 @app.post("/append_to_doc", tags=["Google Docs"], dependencies=[Depends(get_api_key)])
 def api_append_to_doc(request: DocRequest):
     """Appends content to a Google Doc after user approval."""
